@@ -1,0 +1,65 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Quicksand', sans-serif;
+}
+
+.App {
+    display: flex;
+    height: 100vh;
+    width: 100%;
+    overflow: hidden;
+    flex-direction: row;
+}
+
+.control {
+    height: 100vh;
+}
+
+#model-canvas {
+    width: 100%;
+    height: 100%;
+}
+
+.anim-pane, .input-pane {
+    width: 50%;
+    height: 100%;
+}
+
+.input-pane {
+    background-color: pink;
+}
+
+.skeleton, .morph {
+    height: 100vh;
+    display: flex;
+    border-width: 1px;
+    border: solid;
+    border-color: black;
+    flex-direction: row;
+}
+
+.morph-selection, .bone-selection {
+    border-width: 1px;
+    border: solid;
+    border-color: black;
+    overflow-y: scroll;
+    height: 100%;
+    flex: 2;
+}
+
+.bone-control, .morph-control {
+    flex: 3;
+    overflow-y: scroll;
+    height: 100%;
+}
+
+.scene, .input-display {
+    border-width: 1px;
+    border: solid;
+    border-color: black;
+    width: 100%;
+    height: 50%;
+}
+
