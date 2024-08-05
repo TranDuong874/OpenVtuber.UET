@@ -22,7 +22,7 @@ const AnimControl = () => {
                 <button onClick={() => setControlMode('skeleton')}>Skeleton control</button>
                 <button onClick={() => setControlMode('morph')}>Morph control</button>
             </div>
-            <br/>
+
             {controlmode=='skeleton' && <SkeletonControl></SkeletonControl>}
             {controlmode== 'morph' && <MorphControl></MorphControl>}
         </div>
