@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import '../../css/App.css'
 import { useModel } from "../../hooks/useModel";
-import {useKizunaaiMapping} from "../../hooks/useKizunaaiMapping";
+import { kizunaaiMapping } from "../mappingFunctions/kizunaaiMapping";
 
 const InputControl = () => {
     const [data, setData] = useState(null);
@@ -11,7 +11,7 @@ const InputControl = () => {
     const {modelObject, setModelObject} = useModel();
     const intervalIdRef = useRef(null); // Use a ref to store the interval ID
 
-
+    
     const playVideo = () => {
         if (intervalIdRef.current !== null) return; // Prevent multiple intervals
         
@@ -20,6 +20,7 @@ const InputControl = () => {
                 if (prevFrame < data.frame_count - 1) {
                     const newFrame = prevFrame + 1;
                     handleFrameChange(newFrame); // Update frame and slider
+                    kizunaaiMapping(modelObject, data[newFrame]);
                     return newFrame;
                 } else {
                     clearInterval(intervalIdRef.current); // Stop when max frame is reached
