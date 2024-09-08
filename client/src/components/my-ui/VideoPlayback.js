@@ -4,6 +4,7 @@ import '../../css/App.css';
 const VideoPlayback = () => {
     const [playButton, setPlayButton] = useState('Start');
     const [playbackTime, setPlaybackTime] = useState(0);
+    const [frameNumber, setFrameNumber] = useState(0);
 
     const videoRef = useRef(null);
 
@@ -12,10 +13,11 @@ const VideoPlayback = () => {
 
         const updatePlaybackTime = () => {
             setPlaybackTime(video.currentTime);
+            setFrameNumber(video.currentTime.toFixed(3) * 1000 / 30)
         };
 
         // Set the interval to update every interva < 1/FPS
-        const intervalId = setInterval(updatePlaybackTime, 10);
+        const intervalId = setInterval(updatePlaybackTime, 1);
 
         return () => {
             clearInterval(intervalId); // Clean up the interval
@@ -35,9 +37,15 @@ const VideoPlayback = () => {
 
     return (
         <div className='video-container'>
-            Current Frame: {playbackTime.toFixed(2)} seconds
+            <div>
+            Current Time: {playbackTime.toFixed(3)} seconds
+            </div>
+            <div>
+            Current Frame: {frameNumber}
+            </div>
+
             <video height='80%' id='video' ref={videoRef}>
-                <source src='./vid.mp4'></source>
+                <source src='./output.mp4'></source>
             </video>
             <div className='play-back-controller'>
                 <button onClick={handlePlayButton}>{playButton}</button>

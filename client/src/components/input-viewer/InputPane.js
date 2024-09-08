@@ -5,7 +5,7 @@ import InputDisplay from './InputDisplay';
 const InputPane = () => {
     return (  
         <div className="input-pane">
-          <InputDisplay></InputDisplay> 
+          {/* <InputDisplay></InputDisplay>  */}
           <InputControl></InputControl>
         </div>
     );

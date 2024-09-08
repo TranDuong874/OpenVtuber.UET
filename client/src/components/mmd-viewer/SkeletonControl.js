@@ -1,5 +1,5 @@
 import { useModel } from "../../hooks/useModel";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 // import { GUI } from "dat.gui";
 import { useRef } from "react";
 import ObjectSlider from "../my-ui/ObjectSlider";
@@ -11,7 +11,32 @@ const SkeletonControl = () => {
     const handleBoneSelect = (bone) => {
         setCurrentBone(bone);
     }
+
+    useEffect(() => {
+        translateText();
+    }, [])
+
+
     
+    async function translateText() {
+        const res = await fetch("https://libretranslate.com/translate", {
+            method: "POST",
+            body: JSON.stringify({
+                q: "nein",
+                source: "auto",
+                target: "en",
+                format: "text",
+                alternatives: 3,
+                api_key: ""
+            }),
+            headers: { "Content-Type": "application/json" }
+        });
+        
+        console.log(await res.json());
+    }
+    
+
+
     return (
         <div className="skeleton">
             <div className="bone-selection">
