@@ -19,20 +19,20 @@ const SkeletonControl = () => {
 
     
     async function translateText() {
-        const res = await fetch("https://libretranslate.com/translate", {
-            method: "POST",
-            body: JSON.stringify({
-                q: "nein",
-                source: "auto",
-                target: "en",
-                format: "text",
-                alternatives: 3,
-                api_key: ""
-            }),
-            headers: { "Content-Type": "application/json" }
-        });
+        // const res = await fetch("https://libretranslate.com/translate", {
+        //     method: "POST",
+        //     body: JSON.stringify({
+        //         q: "nein",
+        //         source: "auto",
+        //         target: "en",
+        //         format: "text",
+        //         alternatives: 3,
+        //         api_key: ""
+        //     }),
+        //     headers: { "Content-Type": "application/json" }
+        // });
         
-        console.log(await res.json());
+        // console.log(await res.json());
     }
     
 
