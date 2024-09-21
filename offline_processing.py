@@ -117,7 +117,7 @@ json_string = serialize_facial(facial_list)
 with open('facial_data.json', 'w') as file:
     file.write(json_string)
 
-draw(facial_list)
+# draw(facial_list)
 
 cap.release()
 cv2.destroyAllWindows()

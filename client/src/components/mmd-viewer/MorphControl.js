@@ -8,7 +8,6 @@ const MorphControl = () => {
     const [currentMorph, setCurrentMorph] = useState(null);
 
     const handleMorphSelect = (index, name) => {
-        
         setCurrentMorphInfo({index, name});
         setCurrentMorph(modelObject.morphTargetInfluences);
     }

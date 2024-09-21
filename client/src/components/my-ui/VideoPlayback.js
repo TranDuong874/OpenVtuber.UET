@@ -13,7 +13,7 @@ const VideoPlayback = () => {
 
         const updatePlaybackTime = () => {
             setPlaybackTime(video.currentTime);
-            setFrameNumber(video.currentTime.toFixed(3) * 1000 / 30)
+            setFrameNumber(video.currentTime.toFixed(3) * 1000 / 25)
         };
 
         // Set the interval to update every interva < 1/FPS

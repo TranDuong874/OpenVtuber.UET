@@ -10,7 +10,7 @@ const ObjectSlider = ({ object, attribute, name, min, max, step=0.1}) => {
 
   useEffect(() => {
     setValue(object[attribute])
-  }, [object]);
+  }, [object, attribute]);
   
   const [value, setValue] = useState(object[attribute]);
 

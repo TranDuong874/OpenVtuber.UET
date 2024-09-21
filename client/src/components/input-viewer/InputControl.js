@@ -10,7 +10,6 @@ const InputControl = () => {
     const [playing, setPlaying] = useState(false);
     const {modelObject, setModelObject} = useModel();
     const intervalIdRef = useRef(null); // Use a ref to store the interval ID
-
     
     const playVideo = () => {
         if (intervalIdRef.current !== null) return; // Prevent multiple intervals
@@ -43,6 +42,7 @@ const InputControl = () => {
 
     const handleFrameChange = (newFrameNumber) => {
         setFrameNumber(newFrameNumber);
+        kizunaaiMapping(modelObject, data[newFrameNumber]);
         setFrame(data[newFrameNumber]);
         console.log(frame);
     };
@@ -81,7 +81,6 @@ const InputControl = () => {
         <div className="input-control">
             CONTROL HERE
             <button onClick={() => console.log(data)}>Log model data</button>
-            
             <button onClick={playing ? stopVideo : playVideo}>
                 {playing ? "Stop Video" : "Play Video"}
             </button>
@@ -94,7 +93,6 @@ const InputControl = () => {
                 value={frameNumber} // Sync slider with frameNumber
             />
             {frameNumber}
-
             <div className="landmark-selection">
                 {data && Object.entries(data.landmark_index).map(([index, value]) => (
                     <div key={index}>

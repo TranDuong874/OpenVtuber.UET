@@ -5,7 +5,7 @@ const InputDisplay = () => {
     return (
         <div className="input-display">
             VIDEO DISPLAY HERE
-            <VideoPlayback></VideoPlayback>
+            {/* <VideoPlayback></VideoPlayback> */}
         </div>
     );
 }
