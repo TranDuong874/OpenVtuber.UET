@@ -9,7 +9,6 @@ function App() {
     <div className="App">
         <AnimPane></AnimPane>
         <InputPane></InputPane>
-        {/* <VideoPlayback></VideoPlayback> */}
     </div>
   );
 }

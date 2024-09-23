@@ -1,17 +1,27 @@
 import { useState, useEffect } from "react";
 import axios from 'axios';
-import {useFacialData} from '../../hooks/useFacialData';
+import { useFacialData } from '../../hooks/useFacialData';
 
 const VideoUpload = () => {
     const [selectedFile, setSelectedFile] = useState(null);
     const [jobId, setJobId] = useState(null);
+    const [localVideoUrl, setLocalVideoUrl] = useState(null);
     const { facialData, setFacialData } = useFacialData();
     const [processingStatus, setProcessingStatus] = useState(null);
+    const [frames, setFrames] = useState([]);  // Array to store frames
+    const [currentFrame, setCurrentFrame] = useState(0);  // Current frame index
 
+    // Function to handle file selection
+    const handleFileSelect = (event) => {
+        setSelectedFile(event.target.files[0]);
+    };
+
+    // Function to handle video upload
     const handleSubmit = async (event) => {
         event.preventDefault();
-        const formData = new FormData();
+        if (!selectedFile) return alert('Please select a video file to upload.');
         
+        const formData = new FormData();
         formData.append("uploaded-file", selectedFile);
 
         try {
@@ -26,26 +36,86 @@ const VideoUpload = () => {
         }
     };
 
-    const handleFileSelect = (event) => {
-        setSelectedFile(event.target.files[0]);
+    // Function to download the video file and create a local URL for playback
+    const downloadVideoFile = async (jobId) => {
+        try {
+            const response = await axios({
+                url: `http://localhost:4000/openvtuber/download/${jobId}/video`,
+                method: 'GET',
+                responseType: 'blob', // Important for downloading video
+            });
+            const videoBlob = new Blob([response.data], { type: 'video/mp4' });
+            const videoUrl = URL.createObjectURL(videoBlob);  // Create URL from Blob
+            setLocalVideoUrl(videoUrl);  // Set URL for video playback
+        } catch (error) {
+            console.error('Error downloading video:', error);
+        }
     };
 
+    // Function to download the JSON file and set facial data
+    const downloadJsonFile = async (jobId) => {
+        try {
+            const response = await axios.get(`http://localhost:4000/openvtuber/download/${jobId}/json`);
+            setFacialData(response.data);  // Store the facial data in state
+        } catch (error) {
+            console.error('Error downloading JSON:', error);
+        }
+    };
+
+    // Function to extract frames from the video
+    const extractFrames = (videoUrl) => {
+        const video = document.createElement('video');
+        video.src = videoUrl;
+        video.muted = true;
+        video.crossOrigin = 'anonymous';
+
+        video.addEventListener('loadeddata', () => {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            const videoWidth = video.videoWidth;
+            const videoHeight = video.videoHeight;
+            canvas.width = videoWidth;
+            canvas.height = videoHeight;
+
+            const frameInterval = 1 / 24;  // Extract 24 frames per second (you can adjust the frame rate)
+            const totalFrames = Math.floor(video.duration * 24);  // Calculate total frames based on duration
+
+            let frameArray = [];
+
+            // Function to capture each frame
+            const captureFrame = () => {
+                ctx.drawImage(video, 0, 0, videoWidth, videoHeight);
+                frameArray.push(canvas.toDataURL('image/png'));  // Store frame as base64 image
+
+                if (frameArray.length < totalFrames) {
+                    video.currentTime += frameInterval;
+                } else {
+                    setFrames(frameArray);  // Store all frames once completed
+                }
+            };
+
+            video.addEventListener('seeked', captureFrame);
+            video.currentTime = 0;  // Start extracting frames
+        });
+    };
+
+    // Effect to handle job progress via SSE and initiate file downloads
     useEffect(() => {
         if (jobId) {
             const eventSource = new EventSource(`http://localhost:4000/openvtuber/events/${jobId}`);
+
             eventSource.onmessage = (event) => {
                 const data = JSON.parse(event.data);
                 setProcessingStatus(data.status);
+
                 if (data.status === 'completed') {
-                    // Fetch the JSON data once processing is done
-                    axios.get(`http://localhost:4000/openvtuber/download/${jobId}`)
-                        .then(response => {
-                            setFacialData(response.data);
-                            eventSource.close(); // Close the SSE connection
-                        })
-                        .catch(error => console.error('Error downloading JSON:', error));
+                    // Fetch JSON and Video files once processing is done
+                    downloadJsonFile(jobId);
+                    downloadVideoFile(jobId);
+                    eventSource.close();
                 } else if (data.status === 'failed') {
-                    eventSource.close(); // Close the SSE connection if processing failed
+                    console.error('Processing failed.');
+                    eventSource.close();  // Close the connection if processing failed
                 }
             };
 
@@ -54,20 +124,59 @@ const VideoUpload = () => {
                 eventSource.close();
             };
 
+            // Clean up the SSE connection on unmount
             return () => {
-                eventSource.close(); // Clean up the SSE connection when the component unmounts
+                eventSource.close();
             };
         }
     }, [jobId]);
 
+    // When the local video URL is ready, extract frames
+    useEffect(() => {
+        if (localVideoUrl) {
+            extractFrames(localVideoUrl);
+        }
+    }, [localVideoUrl]);
+
+    // Cleanup the local video URL when the component unmounts
+    useEffect(() => {
+        return () => {
+            if (localVideoUrl) {
+                URL.revokeObjectURL(localVideoUrl);  // Revoke the object URL to release memory
+            }
+        };
+    }, [localVideoUrl]);
+
+    // Handle slider change to update the current frame
+    const handleSliderChange = (event) => {
+        setCurrentFrame(event.target.value);
+    };
+
     return (
         <div>
             <form onSubmit={handleSubmit}>
-                <input type="file" onChange={handleFileSelect} />
+                <input type="file" onChange={handleFileSelect} accept="video/mp4" />
                 <input type="submit" value="Upload File" />
             </form>
+
             {processingStatus && <p>Processing Status: {processingStatus}</p>}
-            <button onClick={() => {console.log(facialData)}}>Log Facial Data</button>
+
+            <button onClick={() => { console.log(localVideoUrl); }}>Log Local Video URL</button>
+            <button onClick={() => { console.log(facialData); }}>Log Facial Data</button>
+
+            {/* Slider to control the displayed frame */}
+            {frames.length > 0 && (
+                <div>
+                    <input
+                        type="range"
+                        min="0"
+                        max={frames.length - 1}
+                        value={currentFrame}
+                        onChange={handleSliderChange}
+                    />
+                    <img src={frames[currentFrame]} alt={`Frame ${currentFrame}`} width="600" />
+                </div>
+            )}
         </div>
     );
 };

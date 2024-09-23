@@ -68,14 +68,10 @@
     width: 50px;
 }
 
-.video-container {
-    height: 100%;
-}
-
-#video {
+.video-playback {
     
 }
 
-.video-slider {
-    width: 100%;
+.input-display {
+
 }

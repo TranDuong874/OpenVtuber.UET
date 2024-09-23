@@ -41,11 +41,11 @@ loadJobs();
 
 // Handle video processing
 router.post('/upload-video', upload.single('uploaded-file'), (req, res) => {
-    const fileNameWithoutExt = path.basename(req.file.filename, path.extname(req.file.filename));
-    const uploadedFilePath = path.resolve(req.file.path);
-    const outputVideoPath = path.resolve(__dirname, '../output/', fileNameWithoutExt, req.file.filename);
-    const outputJsonPath = path.resolve(__dirname, '../output/', fileNameWithoutExt, 'facial_data.json');
-    const pythonScriptPath = path.resolve(__dirname, '../videoProcessing.py');
+    const fileNameWithoutExt    = path.basename(req.file.filename, path.extname(req.file.filename));
+    const uploadedFilePath      = path.resolve(req.file.path);
+    const outputVideoPath       = path.resolve(__dirname, '../output/', fileNameWithoutExt, req.file.filename);
+    const outputJsonPath        = path.resolve(__dirname, '../output/', fileNameWithoutExt, 'facial_data.json');
+    const pythonScriptPath      = path.resolve(__dirname, '../videoProcessing.py');
 
     const jobId = uuidv4();
     jobs[jobId] = { status: 'processing', progress: '', outputVideo: outputVideoPath };
@@ -102,8 +102,8 @@ router.get('/events/:jobId', (req, res) => {
     });
 });
 
-// Endpoint for video download after processing
-router.get('/download/:jobId', (req, res) => {
+// Endpoint to download JSON
+router.get('/download/:jobId/json', (req, res) => {
     const jobId = req.params.jobId;
 
     if (!jobs[jobId]) {
@@ -113,18 +113,37 @@ router.get('/download/:jobId', (req, res) => {
     if (jobs[jobId].status === 'completed' && jobs[jobId].outputJson) {
         const outputJsonPath = jobs[jobId].outputJson;
 
-        // Check if the file exists before sending 
         if (fs.existsSync(outputJsonPath)) {
-            const facial_data = fs.readFileSync(outputJsonPath);
-            res.send(facial_data);
+            res.download(outputJsonPath); // Sends the JSON file
         } else {
-            res.status(404).json({ error: 'Unable to send output file' });
+            res.status(404).json({ error: 'JSON file not found' });
         }
-    } else if (jobs[jobId].status === 'processing') {
-        res.status(202).json({ message: 'Processing in progress' });
     } else {
-        res.status(500).json({ error: 'Video processing failed' });
+        res.status(500).json({ error: 'Processing failed or still in progress' });
     }
 });
+
+// Endpoint to download processed video
+router.get('/download/:jobId/video', (req, res) => {
+    const jobId = req.params.jobId;
+
+    if (!jobs[jobId]) {
+        return res.status(404).json({ error: 'Job not found' });
+    }
+
+    if (jobs[jobId].status === 'completed' && jobs[jobId].outputVideo) {
+        const processedVideoPath = jobs[jobId].outputVideo;
+
+        if (fs.existsSync(processedVideoPath)) {
+            console.log(processedVideoPath);
+            res.download(processedVideoPath); // Sends the video file
+        } else {
+            res.status(404).json({ error: 'Processed video not found' });
+        }
+    } else {
+        res.status(500).json({ error: 'Processing failed or still in progress' });
+    }
+});
+
 
 module.exports = router;
