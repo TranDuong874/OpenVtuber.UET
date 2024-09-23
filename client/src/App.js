@@ -1,6 +1,7 @@
 import InputPane from './components/input-viewer/InputPane.js';
 import AnimPane from './components/mmd-viewer/AnimPane.js';
 
+
 import './css/App.css';
 
 function App() {
@@ -8,6 +9,7 @@ function App() {
     <div className="App">
         <AnimPane></AnimPane>
         <InputPane></InputPane>
+        {/* <VideoPlayback></VideoPlayback> */}
     </div>
   );
 }

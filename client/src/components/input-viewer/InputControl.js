@@ -2,8 +2,10 @@ import { useEffect, useState, useRef } from "react";
 import '../../css/App.css'
 import { useModel } from "../../hooks/useModel";
 import { kizunaaiMapping } from "../mappingFunctions/kizunaaiMapping";
+import { useFacialData } from "../../hooks/useFacialData";
 
 const InputControl = () => {
+    const {facialData, setFacialData} = useFacialData();
     const [data, setData] = useState(null);
     const [frameNumber, setFrameNumber] = useState(0);
     const [frame, setFrame] = useState(null);
@@ -16,10 +18,10 @@ const InputControl = () => {
         
         intervalIdRef.current = setInterval(() => {
             setFrameNumber((prevFrame) => {
-                if (prevFrame < data.frame_count - 1) {
+                if (prevFrame < facialData.frame_count - 1) {
                     const newFrame = prevFrame + 1;
                     handleFrameChange(newFrame); // Update frame and slider
-                    kizunaaiMapping(modelObject, data[newFrame]);
+                    kizunaaiMapping(modelObject, facialData[newFrame]);
                     return newFrame;
                 } else {
                     clearInterval(intervalIdRef.current); // Stop when max frame is reached
@@ -42,45 +44,45 @@ const InputControl = () => {
 
     const handleFrameChange = (newFrameNumber) => {
         setFrameNumber(newFrameNumber);
-        kizunaaiMapping(modelObject, data[newFrameNumber]);
-        setFrame(data[newFrameNumber]);
+        kizunaaiMapping(modelObject, facialData[newFrameNumber]);
+        setFrame(facialData[newFrameNumber]);
         console.log(frame);
     };
 
-    const getData = () => {
-        fetch("./facial_data.json", {
-            headers: {
-                "Content-Type": "application/json",
-                Accept: "application/json",
-            },
-        })
-            .then((response) => response.json())
-            .then((data) => {
-                setData(data);
-                setFrame(data[frameNumber]);
-            })
-            .catch((e) => {
-                console.log(e.message);
-            });
-    };
+    // const getData = () => {
+    //     fetch("./facial_data.json", {
+    //         headers: {
+    //             "Content-Type": "application/json",
+    //             Accept: "application/json",
+    //         },
+    //     })
+    //         .then((response) => response.json())
+    //         .then((data) => {
+    //             setData(data);
+    //             setFrame(data[frameNumber]);
+    //         })
+    //         .catch((e) => {
+    //             console.log(e.message);
+    //         });
+    // };
 
-    useEffect(() => {
-        getData();
-        return () => {
-            if (intervalIdRef.current) {
-                clearInterval(intervalIdRef.current);
-            }
-        };
-    }, []);
+    // useEffect(() => {
+    //     getData();
+    //     return () => {
+    //         if (intervalIdRef.current) {
+    //             clearInterval(intervalIdRef.current);
+    //         }
+    //     };
+    // }, []);
 
-    if (!data) {
-        return <div>Loading...</div>;
+    if (!facialData) {
+        return <div>No input data detected</div>;
     }
 
     return (
         <div className="input-control">
             CONTROL HERE
-            <button onClick={() => console.log(data)}>Log model data</button>
+            <button onClick={() => console.log(facialData)}>Log model data</button>
             <button onClick={playing ? stopVideo : playVideo}>
                 {playing ? "Stop Video" : "Play Video"}
             </button>
@@ -88,13 +90,13 @@ const InputControl = () => {
             <input
                 type="range"
                 min="0"
-                max={data.frame_count - 1}
+                max={facialData.frame_count - 1}
                 onChange={(e) => handleFrameChange(Number(e.target.value))}
                 value={frameNumber} // Sync slider with frameNumber
             />
             {frameNumber}
             <div className="landmark-selection">
-                {data && Object.entries(data.landmark_index).map(([index, value]) => (
+                {facialData && Object.entries(facialData.landmark_index).map(([index, value]) => (
                     <div key={index}>
                         <button className="landmark-button">{value}</button>
                         <button>
