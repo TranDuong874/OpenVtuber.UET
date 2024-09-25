@@ -13,7 +13,7 @@ const AnimControl = () => {
     }, [modelObject]);
 
     if (!modelObject) {
-        return <div>Loading asset...</div>
+        return <div>No model found</div>
     }
 
     return (

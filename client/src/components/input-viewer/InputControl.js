@@ -1,23 +1,23 @@
-import { useEffect, useState, useRef } from "react";
+import { useState, useRef } from "react";
 import '../../css/App.css'
 import { useModel } from "../../hooks/useModel";
 import { kizunaaiMapping } from "../mappingFunctions/kizunaaiMapping";
 import { useFacialData } from "../../hooks/useFacialData";
+import { useLocalVideo} from "../../hooks/useLocalVideoProvider";
 
 const InputControl = () => {
-    const {facialData, setFacialData} = useFacialData();
-    const [data, setData] = useState(null);
-    const [frameNumber, setFrameNumber] = useState(0);
+    const {videoFrame, setVideoFrame} = useLocalVideo();
+    const {facialData} = useFacialData();
     const [frame, setFrame] = useState(null);
     const [playing, setPlaying] = useState(false);
-    const {modelObject, setModelObject} = useModel();
+    const {modelObject} = useModel();
     const intervalIdRef = useRef(null); // Use a ref to store the interval ID
     
     const playVideo = () => {
         if (intervalIdRef.current !== null) return; // Prevent multiple intervals
         
         intervalIdRef.current = setInterval(() => {
-            setFrameNumber((prevFrame) => {
+            setVideoFrame((prevFrame) => {
                 if (prevFrame < facialData.frame_count - 1) {
                     const newFrame = prevFrame + 1;
                     handleFrameChange(newFrame); // Update frame and slider
@@ -43,7 +43,7 @@ const InputControl = () => {
     };
 
     const handleFrameChange = (newFrameNumber) => {
-        setFrameNumber(newFrameNumber);
+        setVideoFrame(newFrameNumber);
         kizunaaiMapping(modelObject, facialData[newFrameNumber]);
         setFrame(facialData[newFrameNumber]);
         console.log(frame);
@@ -92,9 +92,9 @@ const InputControl = () => {
                 min="0"
                 max={facialData.frame_count - 1}
                 onChange={(e) => handleFrameChange(Number(e.target.value))}
-                value={frameNumber} // Sync slider with frameNumber
+                value={videoFrame} // Sync slider with frameNumber
             />
-            {frameNumber}
+            {videoFrame}
             <div className="landmark-selection">
                 {facialData && Object.entries(facialData.landmark_index).map(([index, value]) => (
                     <div key={index}>

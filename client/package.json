@@ -18,7 +18,8 @@
     "react-scripts": "5.0.1",
     "three": "^0.168.0",
     "translate-api": "^0.3.18",
-    "web-vitals": "^2.1.4"
+    "web-vitals": "^2.1.4",
+    "whammy": "^0.0.1"
   },
   "scripts": {
     "start": "react-scripts start",

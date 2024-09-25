@@ -3,10 +3,11 @@ import { createContext, useReducer, useState } from "react";
 export const ModelContext = createContext();
 
 const ModelProvider = ({children}) => {
-    const [modelObject, setModelObject] = useState(null)
+    const [modelObject, setModelObject] = useState(null);
+    const [modelPath, setModelPath] = useState(null);
 
     return (
-        <ModelContext.Provider value={{modelObject, setModelObject}}>
+        <ModelContext.Provider value={{modelPath, setModelPath, modelObject, setModelObject}}>
             {children}
         </ModelContext.Provider>
     );

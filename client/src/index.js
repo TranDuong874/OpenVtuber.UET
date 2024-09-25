@@ -3,15 +3,18 @@ import ReactDOM from 'react-dom/client';
 import App from './App';
 import ModelProvider from './context/ModelProvider';
 import FacialDataProvider from './context/FacialDataProvider';
+import LocalVideoProvider from './context/LocalVideoProvider';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <ModelProvider>
-      <FacialDataProvider>
-        <App />
-      </FacialDataProvider>
-    </ModelProvider>
+    <LocalVideoProvider>
+      <ModelProvider>
+        <FacialDataProvider>
+          <App />
+        </FacialDataProvider>
+      </ModelProvider>
+    </LocalVideoProvider>
   </React.StrictMode>
 );
 

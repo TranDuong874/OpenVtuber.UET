@@ -14,6 +14,7 @@ server.use((req, res, next) => {
 
 server.use('/openvtuber', require('../server/routes/index.js'));
 
+server.use('/openvtuber', express.static('../server/uploads/MMDs'));
 server.listen(PORT, () => {
     console.log(`App is running on port ${PORT}`);
 });

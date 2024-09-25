@@ -8,8 +8,8 @@ const InputPane = () => {
     return (  
         <div className="input-pane">
           <VideoUpload></VideoUpload>
-          {/* <InputDisplay></InputDisplay>  */}
-          {/* <InputControl></InputControl> */}
+          <InputDisplay></InputDisplay> 
+          <InputControl></InputControl>
         </div>
     );
 }

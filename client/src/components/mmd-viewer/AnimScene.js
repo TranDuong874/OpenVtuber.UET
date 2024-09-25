@@ -69,7 +69,7 @@ const AnimScene = () => {
             renderer.dispose();
             refContainer.current.removeChild(renderer.domElement);
         };
-    },[]) // Reload whole scene upon model change
+    },[modelObject]) // Reload whole scene upon model change
 
     return (
         <div className='scene' ref={refContainer}>

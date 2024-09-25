@@ -1,15 +1,16 @@
 import { useState, useEffect } from "react";
 import axios from 'axios';
 import { useFacialData } from '../../hooks/useFacialData';
+import { useLocalVideo } from '../../hooks/useLocalVideoProvider';
+import * as THREE from 'three'; // Import THREE
 
 const VideoUpload = () => {
     const [selectedFile, setSelectedFile] = useState(null);
     const [jobId, setJobId] = useState(null);
-    const [localVideoUrl, setLocalVideoUrl] = useState(null);
+    const {localVideoUrl, setLocalVideoUrl} = useLocalVideo();
     const { facialData, setFacialData } = useFacialData();
     const [processingStatus, setProcessingStatus] = useState(null);
-    const [frames, setFrames] = useState([]);  // Array to store frames
-    const [currentFrame, setCurrentFrame] = useState(0);  // Current frame index
+    const {videoFrame, setVideoFrame} = useLocalVideo();
 
     // Function to handle file selection
     const handleFileSelect = (event) => {
@@ -62,42 +63,6 @@ const VideoUpload = () => {
         }
     };
 
-    // Function to extract frames from the video
-    const extractFrames = (videoUrl) => {
-        const video = document.createElement('video');
-        video.src = videoUrl;
-        video.muted = true;
-        video.crossOrigin = 'anonymous';
-
-        video.addEventListener('loadeddata', () => {
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            const videoWidth = video.videoWidth;
-            const videoHeight = video.videoHeight;
-            canvas.width = videoWidth;
-            canvas.height = videoHeight;
-
-            const frameInterval = 1 / 24;  // Extract 24 frames per second (you can adjust the frame rate)
-            const totalFrames = Math.floor(video.duration * 24);  // Calculate total frames based on duration
-
-            let frameArray = [];
-
-            // Function to capture each frame
-            const captureFrame = () => {
-                ctx.drawImage(video, 0, 0, videoWidth, videoHeight);
-                frameArray.push(canvas.toDataURL('image/png'));  // Store frame as base64 image
-
-                if (frameArray.length < totalFrames) {
-                    video.currentTime += frameInterval;
-                } else {
-                    setFrames(frameArray);  // Store all frames once completed
-                }
-            };
-
-            video.addEventListener('seeked', captureFrame);
-            video.currentTime = 0;  // Start extracting frames
-        });
-    };
 
     // Effect to handle job progress via SSE and initiate file downloads
     useEffect(() => {
@@ -110,8 +75,8 @@ const VideoUpload = () => {
 
                 if (data.status === 'completed') {
                     // Fetch JSON and Video files once processing is done
-                    downloadJsonFile(jobId);
                     downloadVideoFile(jobId);
+                    downloadJsonFile(jobId);
                     eventSource.close();
                 } else if (data.status === 'failed') {
                     console.error('Processing failed.');
@@ -131,12 +96,7 @@ const VideoUpload = () => {
         }
     }, [jobId]);
 
-    // When the local video URL is ready, extract frames
-    useEffect(() => {
-        if (localVideoUrl) {
-            extractFrames(localVideoUrl);
-        }
-    }, [localVideoUrl]);
+
 
     // Cleanup the local video URL when the component unmounts
     useEffect(() => {
@@ -146,11 +106,6 @@ const VideoUpload = () => {
             }
         };
     }, [localVideoUrl]);
-
-    // Handle slider change to update the current frame
-    const handleSliderChange = (event) => {
-        setCurrentFrame(event.target.value);
-    };
 
     return (
         <div>
@@ -163,20 +118,6 @@ const VideoUpload = () => {
 
             <button onClick={() => { console.log(localVideoUrl); }}>Log Local Video URL</button>
             <button onClick={() => { console.log(facialData); }}>Log Facial Data</button>
-
-            {/* Slider to control the displayed frame */}
-            {frames.length > 0 && (
-                <div>
-                    <input
-                        type="range"
-                        min="0"
-                        max={frames.length - 1}
-                        value={currentFrame}
-                        onChange={handleSliderChange}
-                    />
-                    <img src={frames[currentFrame]} alt={`Frame ${currentFrame}`} width="600" />
-                </div>
-            )}
         </div>
     );
 };

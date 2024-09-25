@@ -23,8 +23,14 @@
 }
 
 .anim-pane, .input-pane {
-    width: 50%;
+    width: 40%;
     height: 100%;
+}
+
+.model-file-tree {
+    width: 20%;
+    height: 100%;
+    background-color: bisque;
 }
 
 .input-pane {

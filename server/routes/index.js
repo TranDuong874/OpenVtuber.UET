@@ -145,5 +145,90 @@ router.get('/download/:jobId/video', (req, res) => {
     }
 });
 
+// _________________________________________________________ MMD Model Upload Control _____________________________________________
+// Configuration for storing uploaded files
+const mmdStorage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        const { folderName, uploadIdentifier } = req.body; // Get both folderName and uploadIdentifier
+        const uploadDir = path.resolve(__dirname, `../uploads/MMDs/${folderName + '-' + uploadIdentifier}`); // Create a subfolder with the identifier
+
+        // Create the directory if it does not exist
+        fs.mkdirSync(uploadDir, { recursive: true });
+        cb(null, uploadDir); // Save files in the created folder
+    },
+    filename: function (req, file, cb) {
+        const ext = path.extname(file.originalname);
+        const fileName = file.originalname; // Keep the original filename without changes
+        cb(null, fileName); // Save with original file name
+    }
+});
+
+
+const mmdUpload = multer({ storage: mmdStorage });
+
+// Endpoint to handle multiple MMD file uploads to a custom folder
+router.post('/upload-mmd', mmdUpload.array('mmdFiles', 10), (req, res) => {
+    const { folderName } = req.body;
+
+    if (!folderName) {
+        return res.status(400).json({ error: 'Folder name is required' });
+    }
+
+    res.status(200).json({ message: `Files successfully uploaded to folder: ${folderName}` });
+});
+
+// Server-Sent Events for upload progress (simulated)
+router.get('/mmd-events/upload-progress', (req, res) => {
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Connection', 'keep-alive');
+
+    let progress = 0;
+
+    const interval = setInterval(() => {
+        progress += 10;
+        res.write(`data: ${JSON.stringify({ progress: `${progress}% uploaded` })}\n\n`);
+        if (progress >= 100) {
+            clearInterval(interval);
+            res.write('data: { "status": "Upload complete" }\n\n');
+            res.end();
+        }
+    }, 500);
+
+    req.on('close', () => {
+        clearInterval(interval);
+        res.end();
+    });
+});
+
+// Endpoint to get all folder names in /uploads/MMDs/
+router.get('/folders', (req, res) => {
+    const baseDir = path.resolve(__dirname, '../uploads/MMDs/');
+    fs.readdir(baseDir, { withFileTypes: true }, (err, files) => {
+        if (err) {
+            return res.status(500).json({ error: 'Unable to read directory' });
+        }
+        const folders = files
+            .filter(file => file.isDirectory())
+            .map(folder => folder.name);
+        res.json(folders);
+    });
+});
+
+// Endpoint to serve a specific folder
+router.get('/serve-folder/:folderName', (req, res) => {
+    const folderName = req.params.folderName;
+    const folderPath = path.resolve(__dirname, `../uploads/MMDs/${folderName}`);
+
+    // Check if the directory exists
+    if (!fs.existsSync(folderPath)) {
+        return res.status(404).json({ error: 'Folder not found' });
+    }
+
+    // Serve the folder using express.static
+    res.sendFile(folderPath);
+});
+
+
 
 module.exports = router;
