@@ -167,7 +167,7 @@ const mmdStorage = multer.diskStorage({
 const mmdUpload = multer({ storage: mmdStorage });
 
 // Endpoint to handle multiple MMD file uploads to a custom folder
-router.post('/upload-mmd', mmdUpload.array('mmdFiles', 10), (req, res) => {
+router.post('/upload-mmd', mmdUpload.array('mmdFiles', 50), (req, res) => {
     const { folderName } = req.body;
 
     if (!folderName) {

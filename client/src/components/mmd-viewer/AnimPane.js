@@ -26,13 +26,19 @@ const AnimPane = () => {
 
     // Handle file selection
     const handleFileChange = (e) => {
-        setSelectedFiles(e.target.files);
+        const files = e.target.files;
+        setSelectedFiles(files);
+    
+        // Automatically set the folder name to the name of the first .pmx file
+        const pmxFile = Array.from(files).find(file => file.name.endsWith('.pmx'));
+        if (pmxFile) {
+            const folderNameWithoutExtension = pmxFile.name.replace('.pmx', '');
+            setFolderName(folderNameWithoutExtension);
+        } else {
+            alert('Please select at least one .pmx file.');
+        }
     };
 
-    // Handle folder name input change
-    const handleFolderNameChange = (e) => {
-        setFolderName(e.target.value);
-    };
 
     // Submit selected files and folder name to the server
     const handleUpload = async () => {
@@ -110,20 +116,21 @@ const AnimPane = () => {
             </div>
             {/* Upload Form */}
             <div className="upload-form">
-                <input
+                {/* <input
                     type="text"
                     placeholder="Enter folder name"
                     value={folderName}
                     onChange={handleFolderNameChange}
-                />
+                /> */}
 
                 <input
                     type="file"
                     multiple
                     onChange={handleFileChange}
                 />
+                <button onClick={() => console.log(modelObject)}>Log model data</button>
 
-                <button className='' onClick={handleUpload}>Upload Files</button>
+                <button className='upload-model-button' onClick={handleUpload}>Upload Files</button>
                 
                 {uploadProgress > 0 && (
                     <div className="upload-progress">

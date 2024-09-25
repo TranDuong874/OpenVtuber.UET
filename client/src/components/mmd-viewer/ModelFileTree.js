@@ -27,8 +27,9 @@ const ModelFileTree = () => {
 
     const handleFolderClick = (folderName) => {
         // Logic to navigate to the folder or do something with it
-        setModelPath('/openvtuber/' + folderName + '/kizunaai.pmx');
-        console.log('/openvtuber/' + folderName + '/kiznuaai.pmx')
+        const fileName = '/' + folderName.split('-')[0] + '.pmx';
+        setModelPath('/openvtuber/' + folderName + fileName);
+        console.log('/openvtuber/' + folderName + fileName)
         // window.location.href = `/openvtuber/uploads/MMDs/${folderName}`; // Adjust as needed
     };
 

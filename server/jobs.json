@@ -339,5 +339,11 @@
     "progress": "",
     "outputVideo": "E:\\projects\\vtuber-lab\\ReactOpenVtuber\\server\\output\\uploaded-file-1727258630758\\uploaded-file-1727258630758.mp4",
     "outputJson": "E:\\projects\\vtuber-lab\\ReactOpenVtuber\\server\\output\\uploaded-file-1727258630758\\facial_data.json"
+  },
+  "60a6bd5b-d8a3-4176-9869-6eaf85b3276f": {
+    "status": "completed",
+    "progress": "",
+    "outputVideo": "E:\\projects\\vtuber-lab\\ReactOpenVtuber\\server\\output\\uploaded-file-1727262726590\\uploaded-file-1727262726590.mp4",
+    "outputJson": "E:\\projects\\vtuber-lab\\ReactOpenVtuber\\server\\output\\uploaded-file-1727262726590\\facial_data.json"
   }
 }
