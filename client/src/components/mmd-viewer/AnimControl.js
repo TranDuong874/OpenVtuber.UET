@@ -13,7 +13,12 @@ const AnimControl = () => {
     }, [modelObject]);
 
     if (!modelObject) {
-        return <div>No model found</div>
+        return <div style={
+            {
+                textAlign: 'center',
+                background: "#e47f7f",
+            }
+        }>No model found</div>
     }
 
     return (

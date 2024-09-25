@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import '../../css/App.css'
 import { useModel } from "../../hooks/useModel";
 import { kizunaaiMapping } from "../mappingFunctions/kizunaaiMapping";
@@ -11,6 +11,7 @@ const InputControl = () => {
     const [frame, setFrame] = useState(null);
     const [playing, setPlaying] = useState(false);
     const {modelObject} = useModel();
+    const [disableControl, setDisableControl] = useState(false);
     const intervalIdRef = useRef(null); // Use a ref to store the interval ID
     
     const playVideo = () => {
@@ -49,52 +50,29 @@ const InputControl = () => {
         console.log(frame);
     };
 
-    // const getData = () => {
-    //     fetch("./facial_data.json", {
-    //         headers: {
-    //             "Content-Type": "application/json",
-    //             Accept: "application/json",
-    //         },
-    //     })
-    //         .then((response) => response.json())
-    //         .then((data) => {
-    //             setData(data);
-    //             setFrame(data[frameNumber]);
-    //         })
-    //         .catch((e) => {
-    //             console.log(e.message);
-    //         });
-    // };
+    useEffect(() => {
+        if (facialData) {
+            setDisableControl(false);
+        } else {
+            setDisableControl(true);
+        }
 
-    // useEffect(() => {
-    //     getData();
-    //     return () => {
-    //         if (intervalIdRef.current) {
-    //             clearInterval(intervalIdRef.current);
-    //         }
-    //     };
-    // }, []);
-
-    if (!facialData) {
-        return <div>No input data detected</div>;
-    }
+    }, [facialData]);
 
     return (
         <div className="input-control">
-            CONTROL HERE
-            <button onClick={() => console.log(facialData)}>Log model data</button>
-            <button onClick={playing ? stopVideo : playVideo}>
+            <button disabled={disableControl} onClick={playing ? stopVideo : playVideo}>
                 {playing ? "Stop Video" : "Play Video"}
             </button>
 
-            <input
+            {facialData && (<input
                 type="range"
                 min="0"
                 max={facialData.frame_count - 1}
                 onChange={(e) => handleFrameChange(Number(e.target.value))}
                 value={videoFrame} // Sync slider with frameNumber
-            />
-            {videoFrame}
+            />)}
+            {facialData && videoFrame}
             <div className="landmark-selection">
                 {facialData && Object.entries(facialData.landmark_index).map(([index, value]) => (
                     <div key={index}>

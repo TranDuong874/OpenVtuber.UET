@@ -53,16 +53,8 @@ const VideoPlayback = () => {
         <div className="video-playback">
             {/* Slider to control the displayed frame */}
             {frames.length > 0 && (
-                <div>
-                    {/* <input
-                        type="range"
-                        min="0"
-                        max={frames.length - 1}
-                        value={currentFrame}
-                        onChange={handleSliderChange}
-                    /> */}
-                    <img src={frames[videoFrame]} alt={`Frame ${videoFrame}`} width="600" />
-                </div>
+                <img src={frames[videoFrame]} alt={`Frame ${videoFrame}`} height='100%' />
+                
             )}
         </div>
     );

@@ -108,7 +108,7 @@ const VideoUpload = () => {
     }, [localVideoUrl]);
 
     return (
-        <div>
+        <div className="video-upload-control">
             <form onSubmit={handleSubmit}>
                 <input type="file" onChange={handleFileSelect} accept="video/mp4" />
                 <input type="submit" value="Upload File" />
@@ -116,8 +116,6 @@ const VideoUpload = () => {
 
             {processingStatus && <p>Processing Status: {processingStatus}</p>}
 
-            <button onClick={() => { console.log(localVideoUrl); }}>Log Local Video URL</button>
-            <button onClick={() => { console.log(facialData); }}>Log Facial Data</button>
         </div>
     );
 };

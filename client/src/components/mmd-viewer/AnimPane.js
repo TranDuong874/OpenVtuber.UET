@@ -5,6 +5,7 @@ import { useModel } from '../../hooks/useModel.js';
 import AnimScene from './AnimScene.js';
 import AnimControl from './AnimControl.js';
 import { now } from 'three/examples/jsm/libs/tween.module.js';
+import '../../css/App.css';
 
 const AnimPane = () => {
     const {modelObject, setModelObject} = useModel();
@@ -14,9 +15,6 @@ const AnimPane = () => {
     const [selectedFiles, setSelectedFiles] = useState([]);
     const [uploadProgress, setUploadProgress] = useState(0);
     const [uploadStatus, setUploadStatus] = useState('');
-    
-    // TODO: Remove this hardcoded link to file when create server
-    var modelFilePath = 'models/kizunaai/kizunaai.pmx'; // temporary static file in /public
 
     // Model loading progress
     const onProgress = (xhr) => {
@@ -118,14 +116,15 @@ const AnimPane = () => {
                     value={folderName}
                     onChange={handleFolderNameChange}
                 />
+
                 <input
                     type="file"
                     multiple
                     onChange={handleFileChange}
                 />
-                <button onClick={handleUpload}>Upload Files</button>
+
+                <button className='' onClick={handleUpload}>Upload Files</button>
                 
-                {/* Upload Progress and Status */}
                 {uploadProgress > 0 && (
                     <div className="upload-progress">
                         <p>Upload Progress: {uploadProgress}</p>

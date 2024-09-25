@@ -34,7 +34,7 @@ const ModelFileTree = () => {
 
     return (
         <div className="model-file-tree">
-            <h3>Uploaded Models</h3>
+            <h3 style={{height: '50px'}}>Uploaded Models</h3>
             {loading && <p>Loading folders...</p>}
             {error && <p className="error">{error}</p>}
             <div className="uploaded-model-list">

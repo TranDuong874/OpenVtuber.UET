@@ -9,7 +9,7 @@
     display: flex;
     height: 100vh;
     width: 100%;
-    overflow: hidden;
+    overflow-y: hidden;
     flex-direction: row;
 }
 
@@ -23,18 +23,16 @@
 }
 
 .anim-pane, .input-pane {
-    width: 40%;
+    flex: 1;
     height: 100%;
+    min-width: 0;
+    background-color: beige;
 }
 
 .model-file-tree {
-    width: 20%;
-    height: 100%;
-    background-color: bisque;
-}
-
-.input-pane {
-    background-color: pink;
+    flex: 0 1 20%; 
+    max-width: 250px; 
+    background-color: rgb(236, 236, 197);
 }
 
 .skeleton, .morph {
@@ -75,9 +73,25 @@
 }
 
 .video-playback {
-    
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
 }
 
 .input-display {
-
+    background-color: rgb(40, 40, 40);
+    align-items: center;
 }
+
+.upload-form, .video-upload-control {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    height: 50px;
+}
+
+.upload-model-button {
+    left: 10px;
+}
+
