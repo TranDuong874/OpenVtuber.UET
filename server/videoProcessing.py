@@ -64,14 +64,29 @@ def iris_localization(landmarks_list):
     facial_list = []
     for frame, landmarks in landmarks_list:
         euler_angle = hp.get_head_pose(landmarks).flatten()
-        facial_list.append((frame, landmarks, euler_angle))
+        pitch, yaw, roll = euler_angle
+        eye_starts = landmarks[[35, 89]]
+        eye_ends = landmarks[[39, 93]]
+        eye_centers = landmarks[[34, 88]]
+        eye_lengths = (eye_ends - eye_starts)[:, 0]
+        pupils = eye_centers.copy()
+        if yaw > -45:
+            iris_left = gs.get_mesh(frame, eye_lengths[0], eye_centers[0])
+            pupils[0] = iris_left[0]
+        if yaw < 45:
+            iris_right = gs.get_mesh(frame, eye_lengths[1], eye_centers[1])
+            pupils[1] = iris_right[0]
+        poi = eye_starts, eye_ends, pupils, eye_centers
+        theta, pha, _ = gs.calculate_3d_gaze(poi)
+        eye = theta.mean(), pha.mean()
+        facial_list.append((frame, landmarks, euler_angle, eye))
     return facial_list
 
 def draw(facial_list, output_video=output_video_path, color=(125, 255, 0), thickness=2):
     fourcc = cv2.VideoWriter_fourcc(*'H264')
     out = cv2.VideoWriter(output_video, fourcc, FPS, (960, 720))
     
-    for (frame, landmarks, euler_angle) in facial_list:
+    for (frame, landmarks, euler_angle, eye) in facial_list:
         for idx, p in enumerate(np.round(landmarks).astype(np.int32)):
             cv2.circle(frame, tuple(p), 1, color, thickness, cv2.LINE_AA)
             cv2.putText(frame, str(idx), tuple(p), cv2.FONT_HERSHEY_SIMPLEX, 0.25, color, 1, cv2.LINE_AA)
@@ -95,7 +110,7 @@ facial_list = iris_localization(landmarks_list)
 def serialize_facial(facial_list):
     result_dict = {}
     
-    for idx, (frame, landmarks, euler_angle) in enumerate(facial_list):
+    for idx, (frame, landmarks, euler_angle, eye) in enumerate(facial_list):
         index_list = []
         landmark_coord = []
         
@@ -109,6 +124,10 @@ def serialize_facial(facial_list):
                 "x": euler_angle[0],
                 "y": euler_angle[1],
                 "z": euler_angle[2]
+            },
+            "eye": {
+                "theta": eye[0],
+                "pha": eye[1]
             }
         }
         result_dict[str(idx)] = entry

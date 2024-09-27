@@ -55,7 +55,7 @@ const AnimScene = () => {
         effect = new OutlineEffect(renderer);
 
         scene.add(modelObject)
-        camera.position.z = 50;
+        camera.position.z = 20;
         camera.position.y = 18;
 
         var animate = function () {

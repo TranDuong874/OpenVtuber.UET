@@ -345,5 +345,17 @@
     "progress": "",
     "outputVideo": "E:\\projects\\vtuber-lab\\ReactOpenVtuber\\server\\output\\uploaded-file-1727262726590\\uploaded-file-1727262726590.mp4",
     "outputJson": "E:\\projects\\vtuber-lab\\ReactOpenVtuber\\server\\output\\uploaded-file-1727262726590\\facial_data.json"
+  },
+  "2f28bd86-ed9e-4885-8f0a-56a7dbfc96eb": {
+    "status": "completed",
+    "progress": "",
+    "outputVideo": "D:\\lab\\OpenVtuber.UET\\server\\output\\uploaded-file-1727400596726\\uploaded-file-1727400596726.mp4",
+    "outputJson": "D:\\lab\\OpenVtuber.UET\\server\\output\\uploaded-file-1727400596726\\facial_data.json"
+  },
+  "098ea1d2-3614-4b36-b3d4-1db68cccde43": {
+    "status": "completed",
+    "progress": "",
+    "outputVideo": "D:\\lab\\OpenVtuber.UET\\server\\output\\uploaded-file-1727400886497\\uploaded-file-1727400886497.mp4",
+    "outputJson": "D:\\lab\\OpenVtuber.UET\\server\\output\\uploaded-file-1727400886497\\facial_data.json"
   }
 }
